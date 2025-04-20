@@ -8,7 +8,7 @@ CHARSET = list(" .'`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW
 # 设置字体路径（使用等宽字体！）
 FONT_PATH = "C:\\Windows\\Fonts\\consolab.ttf" # 替换为你的字体路径
 
-def adjust_contrast(img, factor=2.0):
+def adjust_contrast(img, factor=1.0):
     """调整图像对比度，factor > 1.0 提高对比度"""
     enhancer = ImageEnhance.Contrast(img)
     return enhancer.enhance(factor)
@@ -29,11 +29,11 @@ def get_density(color):
     perceived_intensity = (1 - luma / 255.0) * 0.85 + (saturation / 255.0) * 0.15
     return perceived_intensity
 
-def image_to_ascii_image(input_path, output_path="ascii_output.png", block_size=(2,2), font_size=12):
+def image_to_ascii_image(input_path, output_path="ascii_output.png", block_size=(2,4), font_size=12):
     img = Image.open(input_path).convert("RGB")
     
     # 增强对比度
-    img = adjust_contrast(img, factor=2.0)
+    img = adjust_contrast(img)
 
     width, height = img.size
 
@@ -46,7 +46,7 @@ def image_to_ascii_image(input_path, output_path="ascii_output.png", block_size=
     rows = new_height // block_size[1]
 
     font = ImageFont.truetype(FONT_PATH, font_size)
-    canvas = Image.new("RGB", (cols * font_size, rows * font_size), (255, 255, 255))
+    canvas = Image.new("RGB", (cols * (font_size // 2), rows * font_size), (255, 255, 255))
     draw = ImageDraw.Draw(canvas)
 
     for row in range(rows):
@@ -62,7 +62,7 @@ def image_to_ascii_image(input_path, output_path="ascii_output.png", block_size=
             char_idx = int(density * (len(CHARSET) - 1))
             char = CHARSET[char_idx]
 
-            x = col * font_size
+            x = col * (font_size // 2)
             y = row * font_size
             draw.text((x, y), char, fill=avg_color, font=font)
 
