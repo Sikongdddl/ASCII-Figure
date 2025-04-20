@@ -2,11 +2,11 @@ from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 import numpy as np
 import os
 
-# 字符集（亮度从低到高）
+# 字符集（密度从低到高）
 CHARSET = list(" .'`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$")
 
 # 设置字体路径（使用等宽字体！）
-FONT_PATH = "/System/Library/Fonts/Menlo.ttc"  # macOS 默认等宽字体
+FONT_PATH = "C:\\Windows\\Fonts\\consolab.ttf" # 替换为你的字体路径
 
 def adjust_contrast(img, factor=2.0):
     """调整图像对比度，factor > 1.0 提高对比度"""
@@ -19,11 +19,15 @@ def get_average_color(image):
     w, h, _ = np_img.shape
     return tuple(np_img.reshape((w * h, 3)).mean(axis=0).astype(int))
 
-def get_brightness(color):
-    """获取颜色亮度（可以加大对比度）"""
+def get_density(color):
     r, g, b = color
-    brightness = 0.299 * r + 0.587 * g + 0.114 * b
-    return min(255, brightness*1.5)  # 增强亮度对比度
+    # 感知亮度（人眼模型）
+    luma = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    # 颜色饱和度
+    saturation = max(r, g, b) - min(r, g, b)
+    # 组合指标（你可以自己调节权重）
+    perceived_intensity = (1 - luma / 255.0) * 0.85 + (saturation / 255.0) * 0.15
+    return perceived_intensity
 
 def image_to_ascii_image(input_path, output_path="ascii_output.png", block_size=(2,2), font_size=12):
     img = Image.open(input_path).convert("RGB")
@@ -54,8 +58,8 @@ def image_to_ascii_image(input_path, output_path="ascii_output.png", block_size=
             block = img.crop((left, upper, right, lower))
 
             avg_color = get_average_color(block)
-            brightness = get_brightness(avg_color)
-            char_idx = int((brightness / 255) * (len(CHARSET) - 1))
+            density = get_density(avg_color)
+            char_idx = int(density * (len(CHARSET) - 1))
             char = CHARSET[char_idx]
 
             x = col * font_size
