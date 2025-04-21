@@ -64,7 +64,7 @@ def image_to_structured_ascii(image_path, block_size=(2, 2)):
 
 # 示例运行
 if __name__ == "__main__":
-    path = "test_icon.jpg"
-    ascii_img = image_to_structured_ascii(path)
+    path = "usage1.jpg"
+    ascii_img = image_to_structured_ascii(path, (7, 14))
     print("\n====== 输出结果 ======\n")
     print(ascii_img)
