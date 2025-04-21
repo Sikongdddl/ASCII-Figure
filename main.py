@@ -25,15 +25,15 @@ def get_density(color):
     luma = 0.2126 * r + 0.7152 * g + 0.0722 * b
     # 颜色饱和度
     saturation = max(r, g, b) - min(r, g, b)
-    # 组合指标（你可以自己调节权重）
-    perceived_intensity = (1 - luma / 255.0) * 0.85 + (saturation / 255.0) * 0.15
-    return perceived_intensity
+    # 组合指标
+    perceived_intensity = (1 - luma / 255.0) * 1.1 + (saturation / 255.0) * 0.7 # 你可以自己调节权重
+    return min(perceived_intensity, 1.0)
 
 def image_to_ascii_image(input_path, output_path="ascii_output.png", block_size=(2,4), font_size=12):
     img = Image.open(input_path).convert("RGB")
     
     # 增强对比度
-    img = adjust_contrast(img)
+    img = adjust_contrast(img, 1.0) # 你可以自己调节对比度
 
     width, height = img.size
 
@@ -72,4 +72,4 @@ def image_to_ascii_image(input_path, output_path="ascii_output.png", block_size=
 if __name__ == "__main__":
     image_path = "usage1.jpg"  # 替换为你的图片路径
     output_path = "usage1_result.png"
-    image_to_ascii_image(image_path, output_path)
+    image_to_ascii_image(image_path, output_path, (2,4), 12) # 你可以自己调节尺寸
