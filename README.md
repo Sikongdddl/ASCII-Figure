@@ -13,3 +13,7 @@ initial grid version with some interesting MSE methods. The output figure is sim
 #### realtime:
 use your own camera with opencv and parse the input of camera to grid version.
 You can tradeoff between FPS and resolutions by changing the block size. Bigger block size transfer a larger area of input image to a ASCII character, leading to faster parsing ,higher FPS but lower resolutions.
+# Image Source
+
+`usage1.jpg` is from Pixiv, created by QuAn_.  
+Pixiv link: [https://www.pixiv.net/artworks/126230821](https://www.pixiv.net/artworks/126230821)
