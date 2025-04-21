@@ -17,11 +17,15 @@ def get_average_color(image):
     w, h, _ = np_img.shape
     return tuple(np_img.reshape((w * h, 3)).mean(axis=0).astype(int))
 
-def get_brightness(color):
-    """获取颜色亮度（可以加大对比度）"""
+def get_density(color):
     r, g, b = color
-    brightness = 0.299 * r + 0.587 * g + 0.114 * b
-    return min(255, brightness*3)  # 增强亮度对比度
+    # 感知亮度（人眼模型）
+    luma = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    # 颜色饱和度
+    saturation = max(r, g, b) - min(r, g, b)
+    # 组合指标
+    perceived_intensity = (1 - luma / 255.0) * 1.1 + (saturation / 255.0) * 0.7 # 你可以自己调节权重
+    return min(perceived_intensity, 1.0)
 
 def frame_to_ascii_image(frame, font, block_size=BLOCK_SIZE):
     img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
@@ -45,8 +49,8 @@ def frame_to_ascii_image(frame, font, block_size=BLOCK_SIZE):
             block = img.crop((left, upper, right, lower))
 
             avg_color = get_average_color(block)
-            brightness = get_brightness(avg_color)
-            char_idx = int((brightness / 255) * (len(CHARSET) - 1))
+            density = get_density(avg_color)
+            char_idx = int(density * (len(CHARSET) - 1))
             char = CHARSET[char_idx]
 
             x = col * FONT_SIZE
